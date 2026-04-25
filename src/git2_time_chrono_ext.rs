@@ -1,7 +1,7 @@
 use crate::Error;
 use chrono::TimeZone;
 
-/// An extension trait to convert `git2::Time` to `chrono::DateTime`.
+/// An extension trait to convert [`git2::Time`] to [`chrono::DateTime`].
 /// # Examples
 /// ```no_run
 /// use git2_time_chrono_ext::Git2TimeChronoExt;
@@ -17,9 +17,8 @@ use chrono::TimeZone;
 /// }
 /// ```
 pub trait Git2TimeChronoExt {
-    /// Convert [`git2::Time`] to [`chrono::DateTime<chrono::FixedOffset>`].
-    ///
-    /// This is useful when the original timezone in the [`git2::Time`] is needed.
+    /// Convert [`git2::Time`] to [`chrono::DateTime`]
+    /// retaining the original timezone.
     /// # Examples
     /// ```
     /// use git2_time_chrono_ext::Git2TimeChronoExt;
@@ -40,7 +39,8 @@ pub trait Git2TimeChronoExt {
     /// ```
     fn to_date_time(&self) -> Result<chrono::DateTime<chrono::FixedOffset>, Error>;
 
-    /// Convert [`git2::Time`] to [`chrono::DateTime`] in the specified time zone.
+    /// Convert [`git2::Time`] to [`chrono::DateTime`]
+    /// in the specified [`chrono::TimeZone`].
     /// # Examples
     /// ```
     /// use git2_time_chrono_ext::Git2TimeChronoExt;
