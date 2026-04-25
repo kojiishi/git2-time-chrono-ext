@@ -8,7 +8,7 @@ keywords = ["git", "git2", "time", "chrono", "extension"]
 repository = "https://github.com/kojiishi/git2-time-chrono-ext"
 readme = "README.md"
 license = "Apache-2.0"
-exclude = [".github", ".gitignore", "hooks", ".vscode"]
+exclude = [".github", ".gitignore", ".vscode", "Taskfile.yml"]
 
 [dependencies]
 anyhow = "1.0.102"
