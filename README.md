@@ -22,6 +22,12 @@ Rust extension library to convert [`git2::Time`] to [`chrono`].
 cargo add git2-time-chrono-ext
 ```
 
+Please see the [releases] for the change history.
+
+[releases]: https://github.com/kojiishi/git2-time-chrono-ext/releases
+
+## Example
+
 ## Usage
 
 ```rust
@@ -37,3 +43,4 @@ fn git2_time_to_string(time: git2::Time) -> String {
   time.to_local_date_time().unwrap().format("%Y-%m-%d %H:%M").to_string()
 }
 ```
+Please see the [docs.rs](docs) for more details.
