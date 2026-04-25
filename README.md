@@ -43,4 +43,4 @@ fn git2_time_to_string(time: git2::Time) -> String {
   time.to_local_date_time().unwrap().format("%Y-%m-%d %H:%M").to_string()
 }
 ```
-Please see the [docs] for more details.
+Please see the [docs.rs][docs] for more details.
