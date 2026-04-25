@@ -67,11 +67,10 @@ pub trait Git2TimeChronoExt {
 
 impl Git2TimeChronoExt for git2::Time {
     fn to_date_time(&self) -> anyhow::Result<chrono::DateTime<chrono::FixedOffset>> {
-        let tz = chrono::FixedOffset::east_opt(self.offset_minutes() * 60);
-        if tz.is_none() {
+        let Some(tz) = chrono::FixedOffset::east_opt(self.offset_minutes() * 60) else {
             bail!("Invalid TimeZone {}", self.offset_minutes());
-        }
-        match tz.unwrap().timestamp_opt(self.seconds(), 0) {
+        };
+        match tz.timestamp_opt(self.seconds(), 0) {
             chrono::MappedLocalTime::Single(datetime) => Ok(datetime),
             chrono::MappedLocalTime::Ambiguous(_, latest) => Ok(latest),
             chrono::MappedLocalTime::None => bail!(
