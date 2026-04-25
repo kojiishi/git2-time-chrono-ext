@@ -17,8 +17,9 @@ use chrono::TimeZone;
 /// }
 /// ```
 pub trait Git2TimeChronoExt {
-    /// Convert `git2::Time` to `chrono::DateTime<chrono::FixedOffset>`.
-    /// The time zone offset is the value in the `git2::Time`.
+    /// Convert [`git2::Time`] to [`chrono::DateTime<chrono::FixedOffset>`].
+    ///
+    /// This is useful when the original timezone in the [`git2::Time`] is needed.
     /// # Examples
     /// ```
     /// use git2_time_chrono_ext::Git2TimeChronoExt;
@@ -39,10 +40,11 @@ pub trait Git2TimeChronoExt {
     /// ```
     fn to_date_time(&self) -> anyhow::Result<chrono::DateTime<chrono::FixedOffset>>;
 
-    /// Convert `git2::Time` to `chrono::DateTime` in the specified time zone.
+    /// Convert [`git2::Time`] to [`chrono::DateTime`] in the specified time zone.
     /// # Examples
     /// ```
     /// use git2_time_chrono_ext::Git2TimeChronoExt;
+    ///
     /// let time = git2::Time::new(1745196130, -420);
     /// let utc_datetime = time.to_date_time_in(&chrono::Utc);
     /// assert_eq!(utc_datetime.unwrap().to_string(), "2025-04-21 00:42:10 UTC");
@@ -52,12 +54,13 @@ pub trait Git2TimeChronoExt {
         tz: &Tz,
     ) -> anyhow::Result<chrono::DateTime<Tz>>;
 
-    /// Convert `git2::Time` to `chrono::DateTime` in the local time zone.
+    /// Convert [`git2::Time`] to [`chrono::DateTime`] in the local time zone.
     /// This function is a shorthand of:
     /// ```
     /// # use git2_time_chrono_ext::Git2TimeChronoExt;
-    /// # let time = git2::Time::new(1745693791, 540);
-    /// let local_datetime = time.to_date_time_in(&chrono::Local);
+    /// # fn to_local(time: git2::Time) -> anyhow::Result<chrono::DateTime<chrono::Local>> {
+    /// time.to_date_time_in(&chrono::Local)
+    /// # }
     /// ```
     fn to_local_date_time(&self) -> anyhow::Result<chrono::DateTime<chrono::Local>>;
 }
