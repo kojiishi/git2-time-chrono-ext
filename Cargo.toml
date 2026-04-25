@@ -1,0 +1,16 @@
+[package]
+name = "git2-time-chrono-ext"
+version = "0.1.0"
+edition = "2024"
+authors = ["Koji Ishii <kojiishi@gmail.com>"]
+description = "Rust extension library to convert `git2::Time` to `chrono`"
+keywords = ["git", "git2", "time", "chrono", "extension"]
+repository = "https://github.com/kojiishi/git2-time-chrono-ext"
+readme = "README.md"
+license = "Apache-2.0"
+exclude = [".github", ".gitignore", "hooks", ".vscode"]
+
+[dependencies]
+anyhow = "1.0.102"
+chrono = "0.4.44"
+git2 = "0.20.4"

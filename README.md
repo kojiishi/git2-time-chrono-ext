@@ -1,0 +1,28 @@
+# git2-time-chrono-ext
+
+Rust extension library to convert [`git2::Time`] to [`chrono`].
+
+[`chrono`]: https://docs.rs/chrono/latest/chrono/
+[`git2::Time`]: https://docs.rs/git2/latest/git2/struct.Time.html
+
+## Install
+
+```shell-session
+cargo add git2-time-chrono-ext
+```
+
+## Usage
+
+```rust
+use git2_time_chrono_ext::Git2TimeChronoExt;
+
+// Print `git2::Time` to `stdout`.
+fn print_git2_time(time: git2::Time) {
+  println!("{}", time.to_local_date_time().unwrap());
+}
+
+// Convert `git2::Time` to `Stirng` in the specified format.
+fn git2_time_to_string(time: git2::Time) -> String {
+  time.to_local_date_time().unwrap().format("%Y-%m-%d %H:%M").to_string()
+}
+```
