@@ -107,4 +107,13 @@ mod tests {
             }
         ));
     }
+
+    #[test]
+    fn to_date_time_not_mappable() {
+        let time = git2::Time::new(i64::MAX, 0);
+        let result = time.to_date_time();
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(matches!(err, Error::TimeNotMappable { .. }));
+    }
 }
