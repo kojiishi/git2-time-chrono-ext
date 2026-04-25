@@ -1,4 +1,4 @@
-use anyhow::*;
+use crate::Error;
 use chrono::TimeZone;
 
 /// An extension trait to convert `git2::Time` to `chrono::DateTime`.
@@ -38,7 +38,7 @@ pub trait Git2TimeChronoExt {
     /// assert!(west_datetime.is_ok());
     /// assert_eq!(west_datetime.unwrap().to_string(), "2025-04-20 17:42:10 -07:00");
     /// ```
-    fn to_date_time(&self) -> anyhow::Result<chrono::DateTime<chrono::FixedOffset>>;
+    fn to_date_time(&self) -> Result<chrono::DateTime<chrono::FixedOffset>, Error>;
 
     /// Convert [`git2::Time`] to [`chrono::DateTime`] in the specified time zone.
     /// # Examples
@@ -49,47 +49,43 @@ pub trait Git2TimeChronoExt {
     /// let utc_datetime = time.to_date_time_in(&chrono::Utc);
     /// assert_eq!(utc_datetime.unwrap().to_string(), "2025-04-21 00:42:10 UTC");
     /// ```
-    fn to_date_time_in<Tz: chrono::TimeZone>(
-        &self,
-        tz: &Tz,
-    ) -> anyhow::Result<chrono::DateTime<Tz>>;
+    fn to_date_time_in<Tz: chrono::TimeZone>(&self, tz: &Tz)
+    -> Result<chrono::DateTime<Tz>, Error>;
 
     /// Convert [`git2::Time`] to [`chrono::DateTime`] in the local time zone.
     /// This function is a shorthand of:
     /// ```
     /// # use git2_time_chrono_ext::Git2TimeChronoExt;
-    /// # fn to_local(time: git2::Time) -> anyhow::Result<chrono::DateTime<chrono::Local>> {
+    /// # fn to_local(time: git2::Time) -> Result<chrono::DateTime<chrono::Local>, git2_time_chrono_ext::Error> {
     /// time.to_date_time_in(&chrono::Local)
     /// # }
     /// ```
-    fn to_local_date_time(&self) -> anyhow::Result<chrono::DateTime<chrono::Local>>;
+    fn to_local_date_time(&self) -> Result<chrono::DateTime<chrono::Local>, Error>;
 }
 
 impl Git2TimeChronoExt for git2::Time {
-    fn to_date_time(&self) -> anyhow::Result<chrono::DateTime<chrono::FixedOffset>> {
+    fn to_date_time(&self) -> Result<chrono::DateTime<chrono::FixedOffset>, Error> {
         let Some(tz) = chrono::FixedOffset::east_opt(self.offset_minutes() * 60) else {
-            bail!("Invalid TimeZone {}", self.offset_minutes());
+            return Err(Error::InvalidTimeZone {
+                offset_minutes: self.offset_minutes(),
+            });
         };
         match tz.timestamp_opt(self.seconds(), 0) {
             chrono::MappedLocalTime::Single(datetime) => Ok(datetime),
             chrono::MappedLocalTime::Ambiguous(_, latest) => Ok(latest),
-            chrono::MappedLocalTime::None => bail!(
-                "Time {} isn't mappable to {}",
-                self.seconds(),
-                self.offset_minutes()
-            ),
+            chrono::MappedLocalTime::None => Err(Error::TimeNotMappable { time: *self }),
         }
     }
 
     fn to_date_time_in<Tz: chrono::TimeZone>(
         &self,
         tz: &Tz,
-    ) -> anyhow::Result<chrono::DateTime<Tz>> {
+    ) -> Result<chrono::DateTime<Tz>, Error> {
         self.to_date_time()
             .map(|datetime| datetime.with_timezone(tz))
     }
 
-    fn to_local_date_time(&self) -> anyhow::Result<chrono::DateTime<chrono::Local>> {
+    fn to_local_date_time(&self) -> Result<chrono::DateTime<chrono::Local>, Error> {
         self.to_date_time_in(&chrono::Local)
     }
 }
@@ -101,8 +97,14 @@ mod tests {
     #[test]
     fn to_date_time_offset_invalid() {
         let time = git2::Time::new(0, 100_000);
-        let datetime = time.to_date_time();
-        assert!(datetime.is_err());
-        assert_eq!(datetime.unwrap_err().to_string(), "Invalid TimeZone 100000");
+        let result = time.to_date_time();
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(matches!(
+            err,
+            Error::InvalidTimeZone {
+                offset_minutes: 100_000
+            }
+        ));
     }
 }
