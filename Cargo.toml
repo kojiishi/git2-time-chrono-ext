@@ -1,6 +1,6 @@
 [package]
 name = "git2-time-chrono-ext"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2024"
 authors = ["Koji Ishii <kojiishi@gmail.com>"]
 description = "Rust extension library to convert `git2::Time` to `chrono`"
@@ -13,4 +13,4 @@ exclude = [".github", ".gitignore", ".vscode", "Taskfile.yml"]
 [dependencies]
 anyhow = "1.0.102"
 chrono = "0.4.44"
-git2 = "0.20.4"
+git2 = { version = "0.20.4", default-features = false }
