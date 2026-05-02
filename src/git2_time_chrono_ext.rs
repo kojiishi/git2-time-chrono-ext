@@ -4,16 +4,21 @@ use chrono::TimeZone;
 /// An extension trait to convert [`git2::Time`] to [`chrono::DateTime`].
 /// # Examples
 /// ```no_run
-/// use git2_time_chrono_ext::Git2TimeChronoExt;
+/// use git2_time_chrono_ext::{Error, Git2TimeChronoExt};
 ///
 /// // Print `git2::Time` to `stdout`.
-/// fn print_git2_time(time: git2::Time) {
+/// fn print_git2_time(time: &git2::Time) {
 ///   println!("{}", time.to_local_date_time().unwrap());
 /// }
 ///
 /// // Convert `git2::Time` to `Stirng` in the specified format.
-/// fn git2_time_to_string(time: git2::Time) -> String {
+/// fn git2_time_to_string(time: &git2::Time) -> String {
 ///   time.to_local_date_time().unwrap().format("%Y-%m-%d %H:%M").to_string()
+/// }
+///
+/// // Convert `git2::Time` to ISO 8601 (RFC 3339) string.
+/// fn git2_time_to_rfc3339(time: &git2::Time) -> Result<String, Error> {
+///   Ok(time.to_date_time_in(&chrono::Utc)?.to_rfc3339())
 /// }
 /// ```
 pub trait Git2TimeChronoExt {
