@@ -42,5 +42,10 @@ fn print_git2_time(time: git2::Time) {
 fn git2_time_to_string(time: git2::Time) -> String {
   time.to_local_date_time().unwrap().format("%Y-%m-%d %H:%M").to_string()
 }
+
+// Convert `git2::Time` to ISO 8601 (RFC 3339) string.
+fn git2_time_to_rfc3339(time: &git2::Time) -> Result<String, Error> {
+  Ok(time.to_date_time_in(&chrono::Utc)?.to_rfc3339())
+}
 ```
 Please see the [docs.rs][docs] for more details.
