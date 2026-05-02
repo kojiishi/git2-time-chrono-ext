@@ -69,6 +69,7 @@ pub trait Git2TimeChronoExt {
 
     /// [`to_date_time`][Git2TimeChronoExt::to_date_time] returns
     /// the latest time when the given time is ambiguous.
+    ///
     /// This function is useful when you want to handle ambiguous time.
     /// Please see [`chrono::MappedLocalTime`] for more details.
     /// # Examples

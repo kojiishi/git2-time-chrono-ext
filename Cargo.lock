@@ -119,7 +119,7 @@ dependencies = [
 
 [[package]]
 name = "git2-time-chrono-ext"
-version = "0.2.3"
+version = "1.0.0"
 dependencies = [
  "chrono",
  "git2",
