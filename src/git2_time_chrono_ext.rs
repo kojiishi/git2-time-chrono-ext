@@ -61,16 +61,43 @@ pub trait Git2TimeChronoExt {
     /// # }
     /// ```
     fn to_local_date_time(&self) -> Result<chrono::DateTime<chrono::Local>, Error>;
+
+    /// [`to_date_time`][Git2TimeChronoExt::to_date_time] returns
+    /// the latest time when the given time is ambiguous.
+    /// This function is useful when you want to handle ambiguous time.
+    /// Please see [`chrono::MappedLocalTime`] for more details.
+    /// # Examples
+    /// ```
+    /// use git2_time_chrono_ext::Git2TimeChronoExt;
+    /// use chrono::MappedLocalTime;
+    ///
+    /// let time = git2::Time::new(1745196130, -420);
+    /// let mapped = time.to_date_time_opt().unwrap();
+    /// if let MappedLocalTime::Single(datetime) = mapped {
+    ///     assert_eq!(datetime.to_string(), "2025-04-20 17:42:10 -07:00");
+    /// } else {
+    ///     panic!("should be Single");
+    /// }
+    /// ```
+    fn to_date_time_opt(
+        &self,
+    ) -> Result<chrono::MappedLocalTime<chrono::DateTime<chrono::FixedOffset>>, Error>;
 }
 
 impl Git2TimeChronoExt for git2::Time {
-    fn to_date_time(&self) -> Result<chrono::DateTime<chrono::FixedOffset>, Error> {
+    fn to_date_time_opt(
+        &self,
+    ) -> Result<chrono::MappedLocalTime<chrono::DateTime<chrono::FixedOffset>>, Error> {
         let Some(tz) = chrono::FixedOffset::east_opt(self.offset_minutes() * 60) else {
             return Err(Error::InvalidTimeZone {
                 offset_minutes: self.offset_minutes(),
             });
         };
-        match tz.timestamp_opt(self.seconds(), 0) {
+        Ok(tz.timestamp_opt(self.seconds(), 0))
+    }
+
+    fn to_date_time(&self) -> Result<chrono::DateTime<chrono::FixedOffset>, Error> {
+        match self.to_date_time_opt()? {
             chrono::MappedLocalTime::Single(datetime) => Ok(datetime),
             chrono::MappedLocalTime::Ambiguous(_, latest) => Ok(latest),
             chrono::MappedLocalTime::None => Err(Error::TimeNotMappable { time: *self }),
@@ -115,5 +142,13 @@ mod tests {
         assert!(result.is_err());
         let err = result.unwrap_err();
         assert!(matches!(err, Error::TimeNotMappable { .. }));
+    }
+
+    #[test]
+    fn to_date_time_opt_none() {
+        use chrono::MappedLocalTime;
+        let time = git2::Time::new(i64::MAX, 0);
+        let mapped = time.to_date_time_opt().unwrap();
+        assert!(matches!(mapped, MappedLocalTime::None));
     }
 }
