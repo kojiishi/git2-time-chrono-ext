@@ -12,5 +12,5 @@ exclude = [".github", ".gitignore", ".vscode", "Taskfile.yml"]
 
 [dependencies]
 chrono = "0.4.44"
-git2 = { version = "0.20.4", default-features = false }
+git2 = { version = "0.21.0", default-features = false }
 thiserror = "2.0.18"
