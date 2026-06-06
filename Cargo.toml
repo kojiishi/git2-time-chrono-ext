@@ -11,6 +11,6 @@ license = "Apache-2.0"
 exclude = [".github", ".gitignore", ".vscode", "Taskfile.yml"]
 
 [dependencies]
-chrono = "0.4.44"
+chrono = "0.4.45"
 git2 = { version = "0.21.0", default-features = false }
 thiserror = "2.0.18"
